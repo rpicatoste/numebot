@@ -5,10 +5,6 @@ from numebot.models.numerai_model import NumeraiModel
 
 class ExampleModel(NumeraiModel):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-
     def load_model(self):
         class_name = str(self.__class__).rstrip('>\'').split('.')[-1]
         print(f'\nCreating {class_name}')
@@ -23,7 +19,10 @@ class ExampleModel(NumeraiModel):
                              n_jobs=-1, 
                              colsample_bytree=0.1)
 
-        print("Loading pre-trained model...")
-        model.load_model(model_file)
+        if model_file.exists():
+            print("Loading pre-trained model...")
+            model.load_model(model_file)
+        else:
+            print(f'WARNING: Model for {self.name} is not trained: Run training!')
     
         return model

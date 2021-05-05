@@ -9,13 +9,9 @@ rm = RoundManager(
     data_folder, 
     public_id=PUBLIC_ID, 
     secret_key=SECRET_KEY,
-#    nrows=10000,
+#    nrows=10000, testing=True,
 )
 
-# Get list of models with their model file
 rm.models_info()
-
-# Get predictions for each model
 rm.generate_predictions_for_all_models()
-
 rm.submit_predictions()

@@ -40,7 +40,13 @@ class FileNamesGetter:
         return self.model_folder(model)/f'model_{model}.{suffix}'
 
     def model_submission_path(self, model: str) -> Path:
-        return self.model_folder(model)/f'{model}_submission_{self.round}.csv'
+        return self.model_folder(model)/'submissions'/f'{model}_submission_{self.round}.csv'
+
+    def model_submission_status_log_path(self, model: str) -> Path:
+        return self.model_folder(model)/f'{model}_submission_status_info.csv'
+
+    def model_leaderboard_log_path(self, model: str) -> Path:
+        return self.model_folder(model)/f'{model}_leaderboard_info.csv'
 
     @property
     def model_configs_path(self) -> Path:
