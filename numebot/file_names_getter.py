@@ -51,3 +51,7 @@ class FileNamesGetter:
     @property
     def model_configs_path(self) -> Path:
         return self.models_folder/'model_configs.csv'
+
+    @property
+    def monitoring_round_details_path(self) -> Path:
+        return self.models_folder/'round_details.csv'

@@ -74,7 +74,7 @@ class NumeraiModel(ABC):
             
         return self._leaderboard
 
-    def submit_predictions(self, test=True):
+    def submit_predictions(self):
         file_path = self.names.model_submission_path(self.name)
         if not file_path.exists():
             print(f'\nPredictions for model {self.name} do not exist. Continue with next model')
@@ -83,10 +83,11 @@ class NumeraiModel(ABC):
         model_id = self.models_dict[self.name]
         
         print(f'\nUploading file for model {self.name}: {file_path}')
-        if not test:
+        if not self.testing:
             submission_id = self.napi.upload_predictions(file_path, model_id=model_id)
         else:
             print(f' - WARNING: Test mode, no file is submitted or checked.')
+            return
 
         return submission_id
 
@@ -202,5 +203,6 @@ class NumeraiModel(ABC):
         if model_path.exists():
             save_bak_version(model_path)
 
+        model_path.parent.mkdir(parents=True, exist_ok=True)
         self.model.save_model(model_path)
         print(f'Model {self.name} saved to {model_path}')

@@ -18,6 +18,12 @@ class NumeraiColumns:
     name: str = 'numerai_name'
     model_code: str = 'model_code'
 
+    # Model round details
+    model_name: str = 'username'
+    round: str = 'round'
+    date: str = 'date'
+    correlation: str = 'correlation'
+
     # Model status 
     concordance: str = 'concordance'
     consistency: str = 'consistency'

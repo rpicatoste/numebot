@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 from pathlib import Path
+from typing import Iterable
 
 
 def to_camel_case(snake_str):
@@ -26,3 +27,10 @@ def pathify(path):
         return path
     
     return Path(path)
+
+
+def listify(item):
+    if isinstance(item, Iterable):
+        return item
+
+    return [item]

@@ -7,6 +7,7 @@ from numebot.data.data_constants import NC
 from numebot.data.data_manager import DataManager
 from numebot.file_names_getter import FileNamesGetter
 from numebot.models.numerai_model import NumeraiModel
+from numebot.monitoring.metrics_manager import MetricsManager
 from numebot.utils import to_camel_case
 
 
@@ -26,10 +27,16 @@ class RoundManager:
 
         self.names = FileNamesGetter(numerai_folder, current_round=self.current_round)
         self.data = self.load_data_manager(nrows, save_memory)
+        
         self.models_dict = self.load_models(verbose=verbose)
+        self.model_names = list(self.models_dict.keys())
 
         # Download current dataset
         self.napi.download_current_dataset(dest_path=self.names.data_folder, unzip=True)
+
+        self.mm = MetricsManager(napi=self.napi, 
+                                 model_names=self.model_names,
+                                 file_names=self.names)
 
     def load_data_manager(self, nrows, save_memory):
         """
@@ -74,9 +81,9 @@ class RoundManager:
 
             _ = model.predict(self.data.tournament, to_be_saved_for_submission=True)
 
-    def submit_predictions(self, test=True):
+    def submit_predictions(self):
         for _, model in self.models_dict.items():
-            model.submit_predictions(test=test)
+            model.submit_predictions()
             
         print('All models\' predictions submitted.')
 
@@ -93,6 +100,7 @@ class RoundManager:
         models_leaderboard = pd.concat(models_leaderboard)
 
         return models_status, models_leaderboard
+
 
 def _import_class(module_name: str) -> type:
     """Import class from a module, e.g. 'text_recognizer.models.MLP'"""
