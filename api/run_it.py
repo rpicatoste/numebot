@@ -1,12 +1,12 @@
 from numebot.round_manager import RoundManager
 
+from numebot.env import NUMERAI_DATA_FOLDER
 from numebot.secret import PUBLIC_ID, SECRET_KEY
 
-
-data_folder = '/home/pica/nas_pica/Data/numerai/'
+print('\nRunning numebot public\n')
 
 rm = RoundManager(
-    data_folder, 
+    NUMERAI_DATA_FOLDER, 
     public_id=PUBLIC_ID, 
     secret_key=SECRET_KEY,
 #    nrows=10000, testing=True,
