@@ -78,12 +78,16 @@ class RoundManager:
             if self.names.model_submission_path(model_name).exists():
                 print(f'Predictions already exist for {model_name}, skipping ...')
                 continue
+                
+            if not model.model_ready:
+                print(f'Model {model.name} is not ready, it needs to be trained or loaded.')
+                continue
 
             _ = model.predict(self.data.tournament, to_be_saved_for_submission=True)
 
-    def submit_predictions(self):
+    def submit_predictions(self, force_resubmission=False):
         for _, model in self.models_dict.items():
-            model.submit_predictions()
+            model.submit_predictions(force_resubmission=force_resubmission)
             
         print('All models\' predictions submitted.')
 

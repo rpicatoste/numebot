@@ -22,7 +22,9 @@ class ExampleModel(NumeraiModel):
         if model_file.exists():
             print("Loading pre-trained model...")
             model.load_model(model_file)
+            self.model_ready = True
         else:
             print(f'WARNING: Model for {self.name} is not trained: Run training!')
+            return None
     
         return model
