@@ -1,11 +1,15 @@
 from pathlib import Path
 
+from numebot.utils import pathify
+
+
 class FileNamesGetter:
 
-    def __init__(self, numerai_folder, current_round) -> None:
+    def __init__(self, numerai_folder, model_configs_path, current_round) -> None:
         self.folder = Path(numerai_folder)
         assert self.folder.exists(), f'ERROR: Numerai folder does not exist: {self.folder}'
         self.round = current_round
+        self.model_configs_path = pathify(model_configs_path)
 
     # Data
     @property
@@ -47,10 +51,6 @@ class FileNamesGetter:
 
     def model_leaderboard_log_path(self, model: str) -> Path:
         return self.model_folder(model)/f'{model}_leaderboard_info.csv'
-
-    @property
-    def model_configs_path(self) -> Path:
-        return self.models_folder/'model_configs.csv'
 
     @property
     def monitoring_round_details_path(self) -> Path:

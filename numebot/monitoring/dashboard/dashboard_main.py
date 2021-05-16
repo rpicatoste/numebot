@@ -5,16 +5,18 @@ from dash.dependencies import Input, Output
 import plotly.graph_objects as go
 
 from numebot.data.data_constants import NC
+from numebot.env import NUMERAI_DATA_FOLDER, MODEL_CONFIGS_PATH
 from numebot.monitoring.dashboard.dashboard_functions import get_color_dict, get_shape_dict
-from numebot_private.round_manager_extended import RoundManagerExtended
-
-from numebot.env import NUMERAI_DATA_FOLDER
+from numebot.round_manager import RoundManager
 from numebot.secret import PUBLIC_ID, SECRET_KEY
 
 
-rm = RoundManagerExtended(NUMERAI_DATA_FOLDER, 
-                          public_id=PUBLIC_ID, 
-                          secret_key=SECRET_KEY)
+rm = RoundManager(
+    numerai_folder=NUMERAI_DATA_FOLDER,
+    model_configs_path=MODEL_CONFIGS_PATH,
+    public_id=PUBLIC_ID,
+    secret_key=SECRET_KEY
+)
 
 full_df = rm.mm.load_round_details_csv()
 model_names = full_df[NC.username].unique()

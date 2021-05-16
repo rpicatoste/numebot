@@ -8,13 +8,15 @@ from numebot.data.data_manager import DataManager
 from numebot.file_names_getter import FileNamesGetter
 from numebot.models.numerai_model import NumeraiModel
 from numebot.monitoring.metrics_manager import MetricsManager
-from numebot.utils import to_camel_case
+from numebot.utils import to_camel_case, pathify
 
 
 class RoundManager:
 
     def __init__(
-        self, numerai_folder, public_id=None, secret_key=None, nrows=None, save_memory=True, testing=False, verbose=False
+        self, numerai_folder, model_configs_path, 
+        public_id=None, secret_key=None, 
+        nrows=None, save_memory=True, testing=False, verbose=False
     ):
         """
         nrows: Limit the lines in each csv read to nrows.
@@ -25,7 +27,9 @@ class RoundManager:
         self.current_round = self.napi.get_current_round()
         print(f'Current round: {self.current_round}')
 
-        self.names = FileNamesGetter(numerai_folder, current_round=self.current_round)
+        self.names = FileNamesGetter(numerai_folder, 
+                                     model_configs_path=model_configs_path, 
+                                     current_round=self.current_round)
         self.data = self.load_data_manager(nrows, save_memory)
         
         self.models_dict = self.load_models(verbose=verbose)

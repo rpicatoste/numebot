@@ -20,12 +20,12 @@ class NumeraiModel(ABC):
 
         self.names = file_names
         self.napi = napi
+        self.model_ready = False
         self.model = self.load_model()
 
         self._models_dict = None
         self._leaderboard = None
 
-        self.model_ready = False
 
     def info(self):
         print(f'\nModel name: {self.name}')
@@ -107,6 +107,10 @@ class NumeraiModel(ABC):
         history of metrics.
         This is done weekly, with each submission.
         """
+        if self.name not in self.models_dict.keys():
+            print(f'No data available for {self.name} yet.')
+            return pd.DataFrame()
+            
         model_id = self.models_dict[self.name]
         model_info_path = self.names.model_submission_status_log_path(self.name)
         round = self.napi.get_current_round()

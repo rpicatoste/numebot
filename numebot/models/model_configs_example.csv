@@ -1,0 +1,2 @@
+numerai_name,model_code,description
+example_model,numebot.models.example_model,"Example model proposed by Numerai."

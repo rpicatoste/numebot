@@ -1,6 +1,7 @@
 from xgboost import XGBRegressor
 
 from numebot.models.numerai_model import NumeraiModel
+from numebot.data.data_manager import DataManager
 
 
 class ExampleModel(NumeraiModel):
@@ -25,6 +26,19 @@ class ExampleModel(NumeraiModel):
             self.model_ready = True
         else:
             print(f'WARNING: Model for {self.name} is not trained: Run training!')
-            return None
     
         return model
+
+    def train_model(self, data: DataManager):
+        print('Training set:  ', data.training.shape)
+        print("Training model...")
+        feature_names = [f for f in data.training.columns if f.startswith("feature")]
+        self.model.fit(data.training[feature_names], data.training['target'])
+
+        if not self.testing:
+            self.save_model()
+        else:
+            print('Testing mode: trained model not saved.')
+        
+        self.model_ready = True
+        print('Training finished!')
