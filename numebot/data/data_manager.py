@@ -9,7 +9,7 @@ class DataManager:
 
         self.names = file_names
 
-        self._training = None
+        self._train = None
         self._tournament = None
         self._val = None
         self._test = None
@@ -18,17 +18,29 @@ class DataManager:
         self.save_memory = save_memory
         self.nrows = nrows
 
+        self._features = None
+
     @property
-    def training(self):
-        if self._training is None:
+    def features(self):
+        if self._features is None:
+            if self._val is not None:
+                self._features = [c for c in self._val if c.startswith("feature")]
+            else:
+                self._features = [c for c in self.train if c.startswith("feature")]
+
+        return self._features
+
+    @property
+    def train(self):
+        if self._train is None:
             rows_txt = 'full' if self.nrows is None else f'{self.nrows} from'
-            print(f'Loading {rows_txt} training data ...')
-            self._training = read_csv(self.names.data_training_path,
+            print(f'Loading {rows_txt} train data ...')
+            self._train = read_csv(self.names.data_training_path,
                                       nrows=self.nrows,
                                       save_memory=self.save_memory)
-            self._training[NC.era] = self._training[NC.era].str.lstrip('era').astype(int)
+            self._train[NC.era] = self._train[NC.era].str.lstrip('era').astype(int)
         
-        return self._training
+        return self._train
 
     @property
     def tournament(self):

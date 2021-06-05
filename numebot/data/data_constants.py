@@ -17,6 +17,8 @@ class NumeraiColumns:
     # models_configs.csv columns
     name: str = 'numerai_name'
     model_code: str = 'model_code'
+    parameters: str = 'parameters'
+    description: str = 'description'
 
     # Model round details
     model_name: str = 'username'

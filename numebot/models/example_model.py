@@ -8,7 +8,7 @@ class ExampleModel(NumeraiModel):
 
     def load_model(self):
         class_name = str(self.__class__).rstrip('>\'').split('.')[-1]
-        print(f'\nCreating {class_name}')
+        print(f'Creating {class_name}')
         model_file = self.names.model_path(self.name, suffix='xgb')
 
         # This is the model that generates the included example predictions file.
@@ -25,15 +25,15 @@ class ExampleModel(NumeraiModel):
             model.load_model(model_file)
             self.model_ready = True
         else:
-            print(f'WARNING: Model for {self.name} is not trained: Run training!')
+            print(f'WARNING: Model for {self.name} is not trained: Run train!')
     
         return model
 
     def train_model(self, data: DataManager):
-        print('Training set:  ', data.training.shape)
+        print('Training set:  ', data.train.shape)
         print("Training model...")
-        feature_names = [f for f in data.training.columns if f.startswith("feature")]
-        self.model.fit(data.training[feature_names], data.training['target'])
+        
+        self.model.fit(data.feature_names, data.train['target'])
 
         if not self.testing:
             self.save_model()

@@ -58,13 +58,22 @@ class RoundManager:
         return self.models_dict[index_or_key]
         
     def load_models(self, verbose=False) -> Dict[str, NumeraiModel]:
-        self.model_cfgs = pd.read_csv(self.names.model_configs_path).set_index('numerai_name', drop=True)
+        self.model_cfgs = pd.read_csv(self.names.model_configs_path)
+        self.model_cfgs.set_index('numerai_name', drop=True, inplace=True)
+        # In the csv, the single quotes are read sometimes as back/forward ticks. Replace by single 
+        # quotes.
+        for ch in '´`‘’':
+            self.model_cfgs.loc[:, NC.parameters] = self.model_cfgs.loc[:, NC.parameters].str.replace(ch, '\'')
 
         models_dict = {}
         for name, config_row in self.model_cfgs.iterrows():
             try:
-                model_class = _import_class(config_row[NC.model_code])
-                models_dict[name] = model_class(config_row, file_names=self.names, napi=self.napi, testing=self.testing)
+                print(f'\nPreparing model {name}')
+                model_class = _import_class(config_row[NC.model_code], verbose=verbose)
+                models_dict[name] = model_class(config_row, 
+                                                file_names=self.names, 
+                                                napi=self.napi, 
+                                                testing=self.testing)
 
             except Exception as exc:
                 if verbose:
@@ -110,9 +119,10 @@ class RoundManager:
         return models_status, models_leaderboard
 
 
-def _import_class(module_name: str) -> type:
+def _import_class(module_name: str, verbose= False) -> type:
     """Import class from a module, e.g. 'text_recognizer.models.MLP'"""
     # It is assumed that the class name is the camel case version of the module name.
+    if verbose: print(module_name)
     class_name = to_camel_case(module_name.rsplit(".", 1)[1])
     
     module = importlib.import_module(module_name)
