@@ -96,11 +96,14 @@ class RoundManager:
                 print(f'Model {model.name} is not ready, it needs to be trained or loaded.')
                 continue
 
-            _ = model.predict(self.data.tournament, to_be_saved_for_submission=True)
+            _ = model.predict(self.data, to_be_saved_for_submission=True)
 
     def submit_predictions(self, force_resubmission=False):
         for _, model in self.models_dict.items():
-            model.submit_predictions(force_resubmission=force_resubmission)
+            try:
+                model.submit_predictions(force_resubmission=force_resubmission)
+            except:
+                print(f'ERROR: Problem with model {model.name}, submission not done.')
             
         print('All models\' predictions submitted.')
 
@@ -117,6 +120,21 @@ class RoundManager:
         models_leaderboard = pd.concat(models_leaderboard)
 
         return models_status, models_leaderboard
+
+    def generate_dummy_input_for_model_init(self, model_name):
+        """
+        Use this function to pass to models that doesn't have their code settled yet (they are being
+        developed or tested). Example: 
+        dummy_param = rm.generate_dummy_input_for_model_init(model_name='test_model')
+        model = MyNewModel(**dummy_param)
+        """
+        config_row = pd.Series(['code-path-TBD'], 
+                               index=[NC.model_code],
+                               name=model_name)
+
+        return {'config_row': config_row,
+                'file_names': self.names,
+                'napi': self.napi}
 
 
 def _import_class(module_name: str, verbose= False) -> type:

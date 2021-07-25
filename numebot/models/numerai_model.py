@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 
 from numebot.data.data_constants import NC
+from numebot.data.data_manager import DataManager
 from numebot.file_names_getter import FileNamesGetter
 from numebot.utils import save_bak_version
 
@@ -34,7 +35,8 @@ class NumeraiModel(ABC):
         print(f' - Model folder: {self.names.model_folder(self.name)}')
         print(f' - Model file: {self.names.model_path(self.name).name}')
 
-    def predict(self, numerai_data_set: pd.DataFrame, to_be_saved_for_submission=False):
+    def predict(self, data: DataManager, to_be_saved_for_submission=False):
+        numerai_data_set = data.tournament
         if not self.model_ready:
             print(f'Model {self.name} is not ready, it needs to be trained or loaded.')
             return None

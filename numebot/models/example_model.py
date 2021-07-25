@@ -37,6 +37,7 @@ class ExampleModel(NumeraiModel):
 
         if not self.testing:
             self.save_model()
+            print('Model saved!')
         else:
             print('Testing mode: trained model not saved.')
         

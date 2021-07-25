@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 
 from numebot.data.data_constants import NC
 from numebot.env import NUMERAI_DATA_FOLDER, MODEL_CONFIGS_PATH
-from numebot.monitoring.dashboard.dashboard_plots import plot_daily_correlations, plot_final_correlations
+from numebot.monitoring.dashboard.dashboard_plots import plot_daily_correlations, plot_final_correlations, plot_final_correlations_mean
 from numebot.round_manager import RoundManager
 from numebot.secret import PUBLIC_ID, SECRET_KEY
 
@@ -14,7 +14,8 @@ rm = RoundManager(
     numerai_folder=NUMERAI_DATA_FOLDER,
     model_configs_path=MODEL_CONFIGS_PATH,
     public_id=PUBLIC_ID,
-    secret_key=SECRET_KEY
+    secret_key=SECRET_KEY,
+    testing=True,
 )
 
 full_df = rm.mm.load_round_details_csv()
@@ -61,32 +62,22 @@ sidebar = html.Div(
     style=SIDEBAR_STYLE#{'width':'20%'}
 )
 
-content = html.Div(
-    [
-        html.H2('Numerai dashboard: Model\'s correlations over time.'),
-        dcc.Graph(id="correlation-evolution"),
-        dcc.Graph(id="correlation-final"),
-    ],
-    className="col-lg-10",
-    style=CONTENT_STYLE
-)
+content = html.Div([html.H2('Numerai dashboard: Model\'s correlations over time.'),
+                    dcc.Graph(id="correlation-evolution"),
+                    dcc.Graph(id="correlation-final"),
+                    dcc.Graph(id="correlation-mean"),],
+                   className="col-lg-10",
+                   style=CONTENT_STYLE)
 
-app.layout = html.Div(
-    [
-        sidebar,
-        content
-    ],
-    className="row",
-)
-
+app.layout = html.Div([sidebar, 
+                       content],
+                      className="row",)
 
 @app.callback(Output("correlation-evolution", "figure"), 
               Input("checklist_rounds", "value"),
               Input("checklist_models", "value"))
 def update_line_chart(rounds, model_names):
-
-    fig = plot_daily_correlations(full_df, rounds, model_names)
-    
+    fig = plot_daily_correlations(full_df, rounds, model_names)    
     return fig
 
 
@@ -94,9 +85,15 @@ def update_line_chart(rounds, model_names):
               Input("checklist_rounds", "value"), 
               Input("checklist_models", "value"))
 def update_line_chart(rounds, model_names):
-    
     fig = plot_final_correlations(full_df, rounds, model_names)
+    return fig
 
+
+@app.callback(Output("correlation-mean", "figure"), 
+              Input("checklist_rounds", "value"), 
+              Input("checklist_models", "value"))
+def update_line_chart(rounds, model_names):
+    fig = plot_final_correlations_mean(full_df, rounds, model_names)
     return fig
 
 

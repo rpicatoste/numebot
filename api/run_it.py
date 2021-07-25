@@ -11,6 +11,7 @@ rm = RoundManager(
     public_id=PUBLIC_ID, 
     secret_key=SECRET_KEY,
 #    nrows=10000, testing=True,
+    verbose=True
 )
 
 rm.models_info()
