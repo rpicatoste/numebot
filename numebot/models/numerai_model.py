@@ -226,8 +226,8 @@ class NumeraiModel(ABC):
     def round_submission_done(self):
         # If the submission is not done, the request for status will fail.
         try:
-            _ = self.napi.submission_status(self.models_dict[self.name])
-            return True
+            status = self.napi.submission_status(self.models_dict[self.name])
+            return status is not None
         except:
             pass
 
