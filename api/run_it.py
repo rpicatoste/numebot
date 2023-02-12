@@ -17,4 +17,3 @@ rm = RoundManager(
 rm.models_info()
 rm.generate_predictions_for_all_models()
 rm.submit_predictions()
-_ = rm.mm.download_round_details()
