@@ -26,8 +26,8 @@ class RoundManager:
 
         self.current_round = self.napi.get_current_round()
 
-        # Check if new round is open.
-        if not self.napi.check_round_open():
+        # Check if new round is open. Maintain compatibility with the previous numerAPI.
+        if 'check_round_open' in dir(self.napi) and not self.napi.check_round_open():
             print(f'Round {self.current_round} is not open, exiting ...')
             return
 
