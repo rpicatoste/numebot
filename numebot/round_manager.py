@@ -2,6 +2,7 @@ import importlib
 import numerapi
 import pandas as pd
 from typing import Dict
+import sys
 
 from numebot import DataManager
 from numebot.data.data_constants import NC
@@ -24,12 +25,12 @@ class RoundManager:
         self.testing = testing
         self.napi = numerapi.NumerAPI(verbosity="info", public_id=public_id, secret_key=secret_key)
 
-        self.current_round = self.napi.get_current_round()
-
         # Check if new round is open. Maintain compatibility with the previous numerAPI.
         if 'check_round_open' in dir(self.napi) and not self.napi.check_round_open():
-            print(f'Round {self.current_round} is not open, exiting ...')
-            return
+            print(f'Round is not open, exiting ...')
+            sys.exit()
+
+        self.current_round = self.napi.get_current_round()
 
         print(f'Current open round: {self.current_round}')
 
@@ -77,12 +78,17 @@ class RoundManager:
         if NC.parameters in self.model_cfgs.columns:
             for ch in '´`‘’':
                 self.model_cfgs.loc[:, NC.parameters] = self.model_cfgs.loc[:, NC.parameters].str.replace(ch, '\'')
+        # Fill model_code nan values with an empty string.
+        self.model_cfgs[NC.model_code].fillna('', inplace=True)
 
         models_dict = {}
         for name, config_row in self.model_cfgs.iterrows():
             try:
                 print(f'\nPreparing model {name}')
                 model_class = _import_class(config_row[NC.model_code], verbose=verbose)
+                if model_class is None:
+                    print(f'Model class not found for {name}, skipping ...')
+                    continue
                 models_dict[name] = model_class(config_row, 
                                                 file_names=self.names, 
                                                 napi=self.napi, 
@@ -91,7 +97,7 @@ class RoundManager:
             except Exception as exc:
                 print(f'\nERROR: Model {name} could not be added to the models list.')
                 print(exc)
-                
+
         return models_dict
 
     def models_info(self):
@@ -152,9 +158,15 @@ class RoundManager:
 
 
 def _import_class(module_name: str, verbose= False) -> type:
-    """Import class from a module, e.g. 'text_recognizer.models.MLP'"""
-    # It is assumed that the class name is the camel case version of the module name.
-    if verbose: print(module_name)
+    """
+    Import class from a module, e.g. 'text_recognizer.models.MLP'
+    
+    It is assumed that the class name is the camel case version of the module name.
+    """
+    if module_name == '':
+        return None
+    
+    if verbose: print(f'Importing {module_name}')
     class_name = to_camel_case(module_name.rsplit(".", 1)[1])
     
     module = importlib.import_module(module_name)
