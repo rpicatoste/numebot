@@ -107,16 +107,29 @@ class RoundManager:
             print(f'\nFinished showing {len(self.models_dict.keys())} models\' info')
 
     def generate_predictions_for_all_models(self):
-        for model_name, model in self.models_dict.items():
-            if self.names.model_submission_path(model_name).exists():
-                print(f'Predictions already exist for {model_name}, skipping ...')
-                continue
-                
-            if not model.model_ready:
-                print(f'Model {model.name} is not ready, it needs to be trained or loaded.')
-                continue
+        
+        # First order models (those not depending on other models' predictions) are run first, then the ensembles that will use the results from those run first.
+        is_enabled = self.model_cfgs['enabled'] == True
+        is_first_order_model = self.model_cfgs['is_ensemble'] == False
+        first_order_models = self.model_cfgs[is_first_order_model & is_enabled]
+        is_ensemble = self.model_cfgs['is_ensemble'] == True
+        ensemble_models = self.model_cfgs[is_ensemble & is_enabled]
 
-            _ = model.predict(self.data, to_be_saved_for_submission=True)
+        model_families = [first_order_models, ensemble_models]
+
+        for model_family in model_families:
+            for model_name in model_family.index:
+                model = self.models_dict[model_name]
+                print(model_name)
+                if self.names.model_submission_path(model_name).exists():
+                    print(f'Predictions already exist for {model_name}, skipping ...')
+                    continue
+                    
+                if not model.model_ready:
+                    print(f'Model {model.name} is not ready, it needs to be trained or loaded.')
+                    continue
+
+                _ = model.predict(self.data, to_be_saved_for_submission=True)
 
     def submit_predictions(self, force_resubmission=False):
         for _, model in self.models_dict.items():
