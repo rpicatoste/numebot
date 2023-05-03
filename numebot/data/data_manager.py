@@ -1,3 +1,5 @@
+import pandas as pd
+
 from numebot.data.data_constants import NC
 from numebot.data.data_reader import read_csv
 from numebot.file_names_getter import FileNamesGetter
@@ -50,7 +52,15 @@ class DataManager:
             self._tournament = read_csv(self.names.data_tournament_path, 
                                         nrows=self.nrows, 
                                         save_memory=self.save_memory)
-        
+
+            # Get live vals
+            # Save the ids and types as pkl to save time in reloads.
+            tournament_path = self.names.data_tournament_path
+            pickle_path = tournament_path.with_suffix('.pkl')
+            if not pickle_path.exists():
+                ids_and_types = self._tournament['data_type']
+                ids_and_types.to_pickle(pickle_path)
+
         return self._tournament
 
     @property
