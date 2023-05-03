@@ -13,10 +13,9 @@ from numebot.utils import save_bak_version
 class NumeraiModel(ABC):
 
     def __init__(
-        self, config_row: pd.Series, file_names: FileNamesGetter, napi: NumerAPI, testing: bool
+        self, model_name: str, file_names: FileNamesGetter, napi: NumerAPI, testing: bool
     ):
-        self.name = config_row.name
-        self.model_code = config_row['model_code']
+        self.name = model_name
         self.testing = testing
 
         self.names = file_names
@@ -30,7 +29,6 @@ class NumeraiModel(ABC):
 
     def info(self):
         print(f'\nModel name: {self.name}')
-        print(f' - Code: {self.model_code}')
         
         print(f' - Model folder: {self.names.model_folder(self.name)}')
         print(f' - Model file: {self.names.model_path(self.name).name}')

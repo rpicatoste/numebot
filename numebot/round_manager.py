@@ -89,7 +89,7 @@ class RoundManager:
                 if model_class is None:
                     print(f'Model class not found for {name}, skipping ...')
                     continue
-                models_dict[name] = model_class(config_row, 
+                models_dict[name] = model_class(model_name=config_row.name, 
                                                 file_names=self.names, 
                                                 napi=self.napi, 
                                                 testing=self.testing)
