@@ -4,7 +4,7 @@ import pandas as pd
 
 
 # Read the csv file into a pandas Dataframe as float16 to save space
-def read_csv(file_path, nrows=None, save_memory=True):
+def read_numerai_csv(file_path, nrows=None, save_memory=True):
 
     with open(file_path, 'r') as f:
         column_names = next(csv.reader(f))

@@ -1,7 +1,7 @@
 import pandas as pd
 
 from numebot.data.data_constants import NC
-from numebot.data.data_reader import read_csv
+from numebot.data.data_reader import read_numerai_csv
 from numebot.file_names_getter import FileNamesGetter
 
 
@@ -37,7 +37,7 @@ class DataManager:
         if self._train is None:
             rows_txt = 'full' if self.nrows is None else f'{self.nrows} from'
             print(f'Loading {rows_txt} train data ...')
-            self._train = read_csv(self.names.data_training_path,
+            self._train = read_numerai_csv(self.names.data_training_path,
                                       nrows=self.nrows,
                                       save_memory=self.save_memory)
             self._train[NC.era] = self._train[NC.era].str.lstrip('era').astype(int)
@@ -49,7 +49,7 @@ class DataManager:
         if self._tournament is None:
             rows_txt = 'full' if self.nrows is None else f'{self.nrows} from'
             print(f'Loading {rows_txt} tournament data ...')
-            self._tournament = read_csv(self.names.data_tournament_path, 
+            self._tournament = read_numerai_csv(self.names.data_tournament_path, 
                                         nrows=self.nrows, 
                                         save_memory=self.save_memory)
 
