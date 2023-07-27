@@ -129,7 +129,12 @@ class RoundManager:
                     print(f'Model {model.name} is not ready, it needs to be trained or loaded.')
                     continue
 
-                _ = model.predict(self.data, to_be_saved_for_submission=True)
+                try:
+                    _ = model.predict(self.data, to_be_saved_for_submission=True)
+                except Exception as exc:
+                    print(f'ERROR: Model {model.name} could not be run.')
+                    print(exc)
+                    continue
 
     def submit_predictions(self, force_resubmission=False):
         for _, model in self.models_dict.items():
